@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw Canva export (fonts, media, design JSON) kept locally for reference
+/canva-source

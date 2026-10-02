@@ -1,0 +1,107 @@
+import { basePhotos } from "./base";
+import type { TrailInvite } from "./types";
+
+/** Evergreen's content, re-imagined as a field-guide hike */
+export const trail: TrailInvite = {
+  concept: "trail",
+  slug: "the-trail",
+  name: "The Trail",
+  tagline: "A new concept for Evergreen — kraft mailer, unfolding trail map and a scroll-driven hike.",
+  meta: {
+    title: "Matilda & Roman — The Trail to Us",
+    description: "Pack your boots — we're getting married in the mountains.",
+  },
+  couple: { names: ["Matilda", "Roman"], initials: ["M", "R"] },
+  date: {
+    short: "10.04.27",
+    long: "October 4, 2027",
+    year: 2027,
+    month: 9,
+    day: 4,
+    weekend: [2, 6],
+  },
+  place: {
+    name: "Estes Park",
+    region: "Colorado",
+    coords: "40.3772° N · 105.5217° W",
+    elevation: "7,522 ft",
+  },
+  envelope: {
+    kicker: "Special delivery",
+    to: ["To our favorite people", "c/o The Mountains", "Estes Park, Colorado"],
+    from: "M & R",
+    cta: "Tap to open",
+  },
+  hero: {
+    eyebrow: "A field guide to the wedding of",
+    tagline: "Join us in the mountains to celebrate our love, our story, and the adventure ahead.",
+    scrollHint: "Start the hike",
+  },
+  welcome: {
+    mile: "0.0",
+    sign: "Trailhead",
+    title: "Welcome",
+    body: "We're so excited to share this special weekend with our favorite people. Join us in the mountains to celebrate our *love*, our story, and the adventure ahead.",
+    note: "so glad you're here!",
+    signature: "— Matilda & Roman",
+  },
+  bigDay: {
+    mile: "1.2",
+    sign: "The Big Day",
+    title: "The Big Day",
+    note: "this one!",
+  },
+  weekend: {
+    mile: "2.4",
+    sign: "Itinerary",
+    title: "The Weekend",
+    events: [
+      { time: "4:00pm", title: "Guest Arrival & Check-In", place: "Estes Park Lodge" },
+      { time: "6:00pm", title: "Welcome Dinner", place: "The Pines Restaurant" },
+      { time: "6:00pm", title: "Ceremony & Celebration", place: "The Pines Restaurant" },
+      { time: "6:00pm", title: "Ceremony & Celebration", place: "The Pines Restaurant" },
+    ],
+  },
+  pack: {
+    mile: "3.6",
+    sign: "Pack List",
+    title: "Pack List",
+    intro: "Our dress code is inspired by the mountains — soft, earthy tones from our woodland setting.",
+    items: [
+      "A shade you feel wonderful in",
+      "A light layer for cool mountain evenings",
+      "Shoes suitable for outdoor paths",
+      "Your best dancing energy",
+    ],
+    swatches: [
+      { name: "Forest", color: "#374437" },
+      { name: "Sage", color: "#a8ab93" },
+      { name: "Olive", color: "#635f43" },
+      { name: "Dusty Rose", color: "#b3938d" },
+      { name: "Warm Taupe", color: "#aa9782" },
+    ],
+  },
+  notes: {
+    mile: "4.8",
+    sign: "Campfire",
+    title: "Campfire Notes",
+    body: "Your love and support mean the world to us. If you'd like to share a note, a story, or words of wisdom, we'd be so grateful.",
+    photos: basePhotos,
+    captions: ["where it all began", "always reaching for you"],
+  },
+  register: {
+    mile: "6.0",
+    sign: "Summit",
+    title: "Sign the Trail Register",
+    intro: "You made it to the top. Let us know you're coming.",
+    nameLabel: "Hiker name",
+    attendanceLabel: "Will you make the climb?",
+    attendanceOptions: ["Joyfully accepts", "Regretfully declines"],
+    mealLabel: "Trail fuel (choice of entrée)",
+    mealOptions: ["Meat", "Seafood", "Vegetarian"],
+    submitLabel: "Sign the register",
+    stamp: "See you at the top!",
+    thankYou: "Signed & stamped — we can't wait to see you on the trail.",
+  },
+  footer: { line: "See you on the trail", sub: "Estes Park · Colorado · 10.04.27" },
+};

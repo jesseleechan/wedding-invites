@@ -1,0 +1,1347 @@
+/* ======================================================================
+ * "The Trail" concept
+ * Flexbox/grid layout with fluid clamp() sizing; absolute positioning is
+ * only used for backdrops, the drawn trail and the envelope's paper layers.
+ * ==================================================================== */
+
+.trail-root {
+  --pine: #1f3a2e;
+  --forest: #2f5240;
+  --moss: #6f8a69;
+  --sage: #a4b28e;
+  --paper: #f3ecdc;
+  --card: #fbf6ea;
+  --kraft: #c9a27a;
+  --ink: #23302a;
+  --sun: #e0703a;
+  --gold: #f3cd8a;
+  --red: #c0392b;
+  --kraft-texture: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .32  0 0 0 0 .22  0 0 0 0 .12  0 0 0 .32 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  font-family: var(--font-lora), Georgia, serif;
+  color: var(--ink);
+}
+
+.trail-root .hand {
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+}
+
+.trail-veil {
+  background: var(--paper);
+}
+
+.js .tinv .doodle {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .tinv .doodle {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ======================================================================
+ * Envelope page
+ * ==================================================================== */
+
+.tenv {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(20px, 4vh, 40px);
+  padding: 40px 16px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 42%, #2e4c3d 0%, #1f3a2e 55%, #132619 100%);
+  color: var(--paper);
+}
+
+.tenv__topo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: rgb(243 236 220 / 0.09);
+  pointer-events: none;
+}
+
+.tenv__kicker {
+  position: relative;
+  font-family: var(--font-plex-mono), monospace;
+  font-size: clamp(11px, 1.1vw, 13px);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--gold);
+}
+
+.tenv__stage {
+  position: relative;
+  container-type: inline-size;
+  width: min(560px, 88vw);
+  aspect-ratio: 3 / 2;
+}
+
+.tenv__env {
+  position: absolute;
+  inset: 0;
+  display: block;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tenv__env:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 10px;
+}
+
+.tenv__front,
+.tenv__back {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* --- front: airmail border, stamp, postmark, address --- */
+
+.tenv__front {
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  padding: 5cqw 6cqw;
+  border: 2.2cqw solid transparent;
+  border-image: repeating-linear-gradient(-45deg, var(--forest) 0 14px, #e9dcc0 14px 22px, var(--sun) 22px 36px, #e9dcc0 36px 44px) 12;
+  background: var(--kraft-texture), var(--kraft);
+  background-clip: padding-box;
+  box-shadow: 0 30px 60px rgb(0 0 0 / 0.45);
+  color: #2a2a22;
+  text-align: left;
+}
+
+.tenv__label {
+  grid-area: 1 / 1;
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 2.1cqw;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.tenv__stamp {
+  grid-area: 1 / 2;
+  width: 17cqw;
+  rotate: 4deg;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.25));
+}
+
+.tenv__postmark {
+  grid-area: 1 / 1 / 2 / 3;
+  justify-self: end;
+  width: 36cqw;
+  margin: 9cqw 9cqw 0 0;
+  color: rgb(35 48 42 / 0.62);
+  rotate: -9deg;
+}
+
+.tenv__address {
+  grid-area: 2 / 1 / 3 / 3;
+  align-self: end;
+  justify-self: center;
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  font-size: 6cqw;
+  line-height: 1.12;
+}
+
+.tenv__address p:first-child {
+  font-size: 1.15em;
+}
+
+.tenv__from {
+  grid-area: 3 / 1;
+  font-family: var(--font-caveat), cursive;
+  font-size: 3.6cqw;
+  opacity: 0.8;
+}
+
+/* --- back: interior, folded map, pocket, flap --- */
+
+.tenv__back {
+  visibility: hidden;
+}
+
+.tenv__inside {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--kraft-texture), #8a6646;
+  box-shadow: 0 30px 60px rgb(0 0 0 / 0.45);
+}
+
+.map-wrap {
+  position: absolute;
+  left: 8%;
+  top: 7%;
+  width: 84%;
+  aspect-ratio: 4 / 3;
+  z-index: 2;
+  display: block;
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+  display: block;
+  perspective: 1800px;
+  transform-style: preserve-3d;
+}
+
+.map__panel {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform-style: preserve-3d;
+}
+
+.map__panel--left {
+  left: -100%;
+  transform-origin: 100% 50%;
+  transform: translateZ(2px) rotateY(180deg);
+}
+
+.map__panel--center {
+  left: 0;
+}
+
+.map__panel--right {
+  left: 100%;
+  transform-origin: 0% 50%;
+  transform: translateZ(1px) rotateY(-180deg);
+}
+
+.map__face {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
+}
+
+.map__face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.07), transparent 14%, transparent 86%, rgb(0 0 0 / 0.09));
+  pointer-events: none;
+}
+
+.map__face--back {
+  transform: rotateY(180deg);
+}
+
+.map__face--plain {
+  background: var(--forest);
+}
+
+.map__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tenv__pocket {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 -1px 1px rgb(0 0 0 / 0.15));
+}
+
+.tenv__flap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  display: block;
+  width: 100%;
+  height: 62%;
+  transform-origin: 50% 0;
+}
+
+.tenv__flap svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 3px 2px rgb(0 0 0 / 0.22));
+}
+
+.tenv__sticker {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 62%;
+  width: 17%;
+  margin: -9.4% 0 0 -8.5%;
+  filter: drop-shadow(0 3px 4px rgb(0 0 0 / 0.3));
+}
+
+.tenv__mapnote {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  margin-top: clamp(40px, 8vh, 90px);
+  text-align: center;
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  font-size: clamp(24px, 3vw, 32px);
+  color: var(--gold);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+}
+
+.tenv__cta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  font-size: clamp(26px, 3vw, 34px);
+  color: var(--paper);
+}
+
+.tenv__cta svg {
+  width: 54px;
+  rotate: 200deg;
+  color: var(--gold);
+}
+
+/* ======================================================================
+ * Invitation
+ * ==================================================================== */
+
+.tinv {
+  background: var(--paper);
+  overflow-x: clip;
+}
+
+/* ---------- Poster hero ---------- */
+
+.thero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(36px, 7vh, 72px) 16px clamp(28px, 5vh, 48px);
+  overflow: hidden;
+  background: #f3cd8a;
+  text-align: center;
+}
+
+.thero__scene {
+  position: absolute;
+  inset: 0;
+}
+
+.thero__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.thero__frame {
+  position: absolute;
+  inset: clamp(10px, 1.6vw, 22px);
+  border: 2px solid var(--paper);
+  outline: 1px solid rgb(243 236 220 / 0.55);
+  outline-offset: -8px;
+  pointer-events: none;
+}
+
+.thero__top {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1.5vh, 14px);
+}
+
+.thero__eyebrow {
+  font-family: var(--font-plex-mono), monospace;
+  font-size: clamp(11px, 1.1vw, 14px);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--pine);
+}
+
+.thero__names {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  column-gap: 0.16em;
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 700;
+  font-size: clamp(56px, 10.5vw, 168px);
+  line-height: 0.95;
+  letter-spacing: 0.03em;
+  color: var(--pine);
+}
+
+.thero__word {
+  display: inline-flex;
+}
+
+.thero__char {
+  display: inline-block;
+  overflow: hidden;
+  padding-bottom: 0.04em;
+}
+
+.thero__char > span {
+  display: inline-block;
+}
+
+.thero__amp {
+  position: relative;
+  top: -0.04em;
+  font-family: var(--font-caveat), cursive;
+  font-size: 0.72em;
+  color: var(--sun);
+}
+
+.thero__compass {
+  position: absolute;
+  left: clamp(26px, 4vw, 70px);
+  bottom: clamp(110px, 18vh, 190px);
+  width: clamp(64px, 7vw, 104px);
+  color: var(--paper);
+}
+
+.thero__bottom {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(12px, 2vh, 20px);
+}
+
+.thero__band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px clamp(14px, 3vw, 44px);
+  padding: 10px clamp(18px, 3vw, 36px);
+  background: var(--paper);
+  color: var(--pine);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: clamp(11px, 1.05vw, 14px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+}
+
+.thero__band strong {
+  font-family: var(--font-oswald), sans-serif;
+  font-size: 1.9em;
+  letter-spacing: 0.1em;
+  color: var(--sun);
+}
+
+.thero__hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  font-size: clamp(22px, 2.4vw, 28px);
+  color: var(--paper);
+  text-decoration: none;
+}
+
+.thero__hint span {
+  width: 3px;
+  height: 44px;
+  background: repeating-linear-gradient(var(--paper) 0 6px, transparent 6px 12px);
+  animation: trail-dash 1.2s linear infinite;
+}
+
+@keyframes trail-dash {
+  to {
+    background-position: 0 12px;
+  }
+}
+
+/* ---------- The hike ---------- */
+
+.trail {
+  position: relative;
+  padding: clamp(70px, 11vh, 130px) 16px clamp(90px, 14vh, 160px);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.trail__topo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: #bfae86;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.trail__svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.trail__ghost {
+  fill: none;
+  stroke: #8f7b55;
+  stroke-width: 3;
+  stroke-dasharray: 2 12;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.trail__progress {
+  fill: none;
+  stroke: var(--sun);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.trail__hiker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+}
+
+.trail__hiker span {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--sun);
+  border: 3px solid var(--paper);
+  box-shadow: 0 0 0 0 rgb(224 112 58 / 0.6);
+  animation: hiker-pulse 1.8s ease-out infinite;
+}
+
+@keyframes hiker-pulse {
+  to {
+    box-shadow: 0 0 0 16px rgb(224 112 58 / 0);
+  }
+}
+
+.trail__intro {
+  position: relative;
+  z-index: 2;
+  width: fit-content;
+  max-width: min(620px, 100%);
+  margin: 0 auto clamp(60px, 10vh, 120px);
+  padding: 10px 18px;
+  background: var(--paper);
+  text-align: center;
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  font-size: clamp(24px, 2.6vw, 32px);
+  line-height: 1.2;
+  color: var(--forest);
+}
+
+.trail__stops {
+  position: relative;
+  z-index: 2;
+  max-width: 1180px;
+  margin: 0 auto;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(70px, 13vh, 150px);
+}
+
+.stop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(20px, 3.4vw, 54px);
+}
+
+.stop--right {
+  flex-direction: row-reverse;
+}
+
+.stop__marker {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 3px solid var(--forest);
+  box-shadow: 0 0 0 7px rgb(243 236 220 / 0.92);
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--forest);
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
+    scale 0.4s ease;
+}
+
+.stop__marker.is-reached {
+  background: var(--forest);
+  color: var(--paper);
+  scale: 1.12;
+}
+
+.stop__aside {
+  flex: 0 1 520px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.stop--right .stop__aside {
+  justify-content: flex-end;
+}
+
+/* ---------- Journal pages ---------- */
+
+.journal {
+  position: relative;
+  flex: 0 1 540px;
+  min-width: 0;
+  padding: clamp(26px, 3vw, 42px);
+  background: var(--card);
+  box-shadow:
+    0 20px 44px rgb(35 48 42 / 0.16),
+    0 2px 4px rgb(35 48 42 / 0.08);
+  rotate: -1deg;
+}
+
+.stop--right .journal {
+  rotate: 1deg;
+}
+
+.journal::before,
+.journal::after {
+  content: "";
+  position: absolute;
+  top: -13px;
+  width: 92px;
+  height: 26px;
+  background: rgb(236 222 180 / 0.78);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+}
+
+.journal::before {
+  left: 14%;
+  rotate: -5deg;
+}
+
+.journal::after {
+  right: 12%;
+  rotate: 4deg;
+}
+
+.journal__mile {
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sun);
+}
+
+.journal__title {
+  margin: 8px 0 16px;
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 700;
+  font-size: clamp(30px, 3.3vw, 46px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--pine);
+}
+
+.journal__body {
+  font-size: clamp(16px, 1.3vw, 19px);
+  line-height: 1.6;
+}
+
+.journal__body em {
+  font-style: italic;
+}
+
+.hand--note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 30px;
+  color: var(--sun);
+  rotate: -2deg;
+}
+
+.hand__heart {
+  width: 30px;
+  fill: none;
+  stroke: var(--sun);
+  stroke-width: 3;
+}
+
+.hand--sig {
+  margin-top: 6px;
+  text-align: right;
+  font-size: 26px;
+  color: var(--forest);
+}
+
+/* ---------- Signposts ---------- */
+
+.signpost {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 230px;
+}
+
+.signpost__board {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 28px 14px 42px;
+  background: linear-gradient(#ad7d52, #8b603e);
+  color: #fbf0d9;
+  clip-path: polygon(20px 0, 100% 0, 100% 100%, 20px 100%, 0 50%);
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.15);
+}
+
+.stop--right .signpost__board {
+  padding: 14px 42px 14px 28px;
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%);
+}
+
+.signpost__mile {
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.signpost__name {
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.signpost__post {
+  width: 14px;
+  height: 130px;
+  margin-top: -4px;
+  background: linear-gradient(90deg, #6b4a2e, #8d6240, #6b4a2e);
+}
+
+.signpost__trees {
+  width: 170px;
+  margin-top: -76px;
+  fill: var(--moss);
+}
+
+/* ---------- Calendar ---------- */
+
+.cal {
+  position: relative;
+  padding: 16px 16px 12px;
+  background: #fffdf6;
+  border: 1px solid #e3d8bf;
+}
+
+.cal__head {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid var(--pine);
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pine);
+}
+
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  row-gap: 4px;
+  text-align: center;
+}
+
+.cal__dow {
+  padding: 4px 0;
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 11px;
+  color: var(--moss);
+}
+
+.cal__day {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1.25;
+  font-size: clamp(14px, 1.2vw, 17px);
+}
+
+.cal__hl {
+  position: absolute;
+  inset: 20% 0;
+  z-index: -1;
+  background: rgb(164 178 142 / 0.5);
+}
+
+.cal__day--big {
+  font-weight: 700;
+  color: var(--sun);
+}
+
+.cal__circle {
+  position: absolute;
+  left: -30%;
+  top: -22%;
+  width: 160%;
+  height: 144%;
+  overflow: visible;
+  color: var(--sun);
+  pointer-events: none;
+}
+
+.cal__note {
+  position: absolute;
+  left: 92%;
+  bottom: 96%;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  white-space: nowrap;
+  font-size: 26px;
+  color: var(--sun);
+  pointer-events: none;
+}
+
+.cal__arrow {
+  width: 40px;
+  scale: -1 1;
+  rotate: -10deg;
+}
+
+/* ---------- Elevation profile + itinerary ---------- */
+
+.profile {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 4px 0 20px;
+  overflow: visible;
+}
+
+.profile__grid line {
+  stroke: #d8cba8;
+  stroke-dasharray: 2 6;
+}
+
+.profile__fill {
+  fill: rgb(164 178 142 / 0.35);
+}
+
+.profile__line {
+  fill: none;
+  stroke: var(--forest);
+  stroke-width: 3;
+}
+
+.profile__pin line {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.profile__pin path {
+  fill: var(--sun);
+}
+
+.profile__pin circle {
+  fill: var(--forest);
+  stroke: var(--card);
+  stroke-width: 2;
+}
+
+.profile__pin text {
+  fill: var(--paper);
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  text-anchor: middle;
+}
+
+.profile__label {
+  fill: var(--moss);
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 11px;
+}
+
+.itinerary {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 22px;
+}
+
+.itinerary li {
+  display: flex;
+  gap: 10px;
+}
+
+.itinerary__num {
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.1;
+  color: var(--sun);
+}
+
+.itinerary__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.itinerary__time {
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--moss);
+}
+
+.itinerary__title {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.itinerary__place {
+  font-size: 15px;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* ---------- Pack list ---------- */
+
+.checklist {
+  list-style: none;
+  margin: 18px 0 4px;
+}
+
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+  font-size: clamp(16px, 1.3vw, 18px);
+}
+
+.checklist__box {
+  flex-shrink: 0;
+  width: 26px;
+  color: var(--forest);
+  overflow: visible;
+}
+
+.patches {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 20px;
+  margin-top: 22px;
+}
+
+.patches li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.patches__chip {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--swatch);
+  border: 2px dashed rgb(255 255 255 / 0.6);
+  box-shadow:
+    0 0 0 4px var(--swatch),
+    0 4px 10px rgb(0 0 0 / 0.25);
+}
+
+.patches .hand {
+  font-size: 20px;
+  color: var(--forest);
+}
+
+/* ---------- Campfire notes ---------- */
+
+.taped {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 24px;
+}
+
+.taped__photo {
+  position: relative;
+  width: 46%;
+  padding: 10px 10px 6px;
+  background: #fffdf6;
+  box-shadow: 0 10px 24px rgb(35 48 42 / 0.2);
+}
+
+.taped__photo::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 70px;
+  height: 22px;
+  margin-left: -35px;
+  background: rgb(236 222 180 / 0.8);
+  rotate: -3deg;
+}
+
+.taped__photo--0 {
+  rotate: -5deg;
+}
+
+.taped__photo--1 {
+  margin: 30px 0 0 -6%;
+  rotate: 4deg;
+}
+
+.taped__photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.taped__photo figcaption {
+  padding-top: 6px;
+  text-align: center;
+  font-size: 20px;
+  color: var(--forest);
+}
+
+.campfire {
+  display: block;
+  width: 64px;
+  margin: 10px 0 0 auto;
+}
+
+/* ---------- Trail register (RSVP) ---------- */
+
+.stop--summit .journal {
+  padding-left: clamp(48px, 5vw, 64px);
+  background-color: #fffdf6;
+  background-image:
+    linear-gradient(90deg, transparent 30px, rgb(192 57 43 / 0.35) 30px 32px, transparent 32px),
+    repeating-linear-gradient(transparent 0 33px, rgb(110 140 150 / 0.22) 33px 34px);
+}
+
+.register {
+  position: relative;
+}
+
+.register__form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 16px;
+}
+
+.register__field {
+  display: flex;
+  flex-direction: column;
+}
+
+.register__group {
+  border: 0;
+}
+
+.register__label {
+  display: block;
+  margin-bottom: 8px;
+  padding: 0;
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--moss);
+}
+
+.register__input {
+  width: 100%;
+  padding: 2px 4px;
+  border: 0;
+  border-bottom: 2px solid var(--forest);
+  background: transparent;
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  font-size: 30px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.register__input:focus {
+  border-color: var(--sun);
+}
+
+.register__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.register__option {
+  position: relative;
+  cursor: pointer;
+}
+
+.register__option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.register__option span {
+  display: block;
+  padding: 6px 16px;
+  border: 2px dashed var(--forest);
+  border-radius: 999px;
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--forest);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.register__option:hover span {
+  background: rgb(164 178 142 / 0.3);
+}
+
+.register__option input:checked + span {
+  background: var(--forest);
+  border-style: solid;
+  color: var(--paper);
+}
+
+.register__option input:focus-visible + span {
+  outline: 2px solid var(--sun);
+  outline-offset: 2px;
+}
+
+.register__submit {
+  align-self: flex-start;
+  padding: 14px 26px;
+  border-radius: 4px;
+  background: var(--pine);
+  color: var(--paper);
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 0 #11241a;
+  transition: translate 0.1s ease;
+}
+
+.register__submit:active {
+  translate: 0 2px;
+  box-shadow: 0 2px 0 #11241a;
+}
+
+.register__thanks {
+  margin-top: 18px;
+  font-size: 32px;
+  line-height: 1.2;
+  color: var(--forest);
+}
+
+.register__stamp {
+  position: absolute;
+  right: -8px;
+  top: -170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 150px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.register__stamp-art {
+  width: 84px;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.25));
+}
+
+.register__stamp span {
+  margin-top: -14px;
+  padding: 4px 8px;
+  border: 3px double var(--red);
+  background: rgb(255 253 246 / 0.75);
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+/* ---------- Footer ---------- */
+
+.tfoot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: clamp(60px, 10vh, 110px) 16px;
+  overflow: hidden;
+  background: var(--pine);
+  color: var(--paper);
+  text-align: center;
+}
+
+.tfoot__topo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: rgb(243 236 220 / 0.07);
+  pointer-events: none;
+}
+
+.tfoot__patch {
+  position: relative;
+  width: 120px;
+}
+
+.tfoot__line {
+  position: relative;
+  font-family: var(--font-caveat), cursive;
+  font-weight: 700;
+  font-size: clamp(42px, 6vw, 72px);
+  line-height: 1.1;
+  color: var(--gold);
+}
+
+.tfoot__sub,
+.tfoot__coords {
+  position: relative;
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.tfoot__coords {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* ---------- Phones / small tablets ---------- */
+
+@media (max-width: 599.98px) {
+  .thero__compass {
+    display: none;
+  }
+}
+
+@media (max-width: 899.98px) {
+  .stop,
+  .stop--right {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .stop__marker {
+    order: -1;
+    width: 44px;
+    height: 44px;
+    margin-top: 26px;
+    font-size: 15px;
+    box-shadow: 0 0 0 5px rgb(243 236 220 / 0.92);
+  }
+
+  .stop__aside {
+    display: none;
+  }
+
+  .journal,
+  .stop--right .journal {
+    flex: 1 1 auto;
+    rotate: 0deg;
+  }
+
+  .trail {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .itinerary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .register__stamp {
+    position: static;
+    margin: 18px auto 0;
+  }
+}

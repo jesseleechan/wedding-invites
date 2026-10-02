@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wedding invites
 
-## Getting Started
-
-First, run the development server:
+Next.js + GSAP recreation of the Canva site
+<https://glowuponline.my.canva.site/green-wedding-invitation>, rebuilt with flexbox
+instead of Canva's absolute positioning.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev   # http://localhost:3000 → redirects to /green-wedding-invitation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Routes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Route | What it is |
+| --- | --- |
+| `/<slug>` | Envelope screen ("Press to Open") |
+| `/<slug>/home` | The invitation (hero, welcome, weekend, dress code, a few words, RSVP) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Designs
 
-## Learn More
+| Slug | Look |
+| --- | --- |
+| `green-wedding-invitation` | The original Canva recreation |
+| `midnight-gala` | Navy & gold art deco, animated night sky |
+| `blush-garden` | Rose & sage garden, lace edges, falling petals, wreath |
+| `desert-sun` | Terracotta boho, sunset over mesas, self-drawing line art |
 
-To learn more about Next.js, take a look at the following resources:
+`/` is a gallery linking to all of them.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Concepts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Concepts reuse an invite's content but have their own components, layout and
+motion, so they aren't limited to the themed layout above.
 
-## Deploy on Vercel
+| Slug | Concept | Lives in |
+| --- | --- | --- |
+| `the-trail` | Evergreen as a field-guide hike: kraft mailer → flip → peel sticker → open flap → unfold trail map → zoom into the X; then a national-park poster and a scroll-drawn trail with a walking hiker past six journal-page stops (calendar, elevation profile, pack list, trail-register RSVP) | `src/concepts/trail/` |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Content is in `src/invites/trail.ts` (`TrailInvite` type). The trail path is
+measured from the stop markers at runtime, so it follows the flex layout at any
+screen size.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Making a variation
+
+Each invite is one config file in `src/invites/` (copy, theme colours and a
+`design` block). Register new ones in `src/invites/index.ts`.
+
+The `design` block mixes and matches building blocks:
+
+| Option | Choices | Lives in |
+| --- | --- | --- |
+| `backdrop` | photo, or `night` / `garden` / `desert` SVG scene | `components/scenes.tsx` |
+| `card` | `ticket` (Canva PNG), `deco`, `lace`, `sunset` | `components/variants.tsx` |
+| `divider` | `torn`, `deco`, `scallop`, `dunes` | `components/variants.tsx` |
+| `dateShape` / `swatchShape` | `circle`, `ring`, `arch` / `circle`, `diamond`, `arch` | CSS |
+| `photoFrame` | `polaroid`, `deco`, `arch` | `components/variants.tsx` |
+| `weekendArt` | `mountain`, `wreath`, `desert` | `components/variants.tsx` |
+| `weekendLayout` / `wordsLayout` | `split`, `reverse` (mirrored) | CSS |
+| `fonts` | any font variable from `app/layout.tsx` | |
+| `envelopeTint` / `sealTint` | recolour the envelope / wax seal, texture kept | |
+| `sketchFilter` | CSS filter that recolours the pencil sketches | |
+
+## Layout notes
+
+- Sizes are written in design pixels from the 1366px Canva canvas:
+  `calc(var(--u) * 24)`. `--u` tracks viewport width on desktop and is clamped
+  on tablet/phone, where the two-column sections stack.
+- The hero card and envelope use container query units so they scale as one
+  piece on small screens.
+- Absolute positioning is only used for full-bleed backgrounds, torn-paper
+  edges and the inside of the polaroid graphic.
+- Animations live in `src/components/Invitation.tsx` (`useInvitationMotion`) and
+  `src/components/EnvelopeScreen.tsx`. They respect `prefers-reduced-motion`.
+  In dev, add `?fast` to a URL to speed every animation up 20×.
+
+## RSVP
+
+`src/components/RsvpForm.tsx` matches the Canva form visually but doesn't send
+data anywhere yet. Hook its `onSubmit` up to an API route or form service.
+
+## Source assets
+
+`canva-source/` (git-ignored) holds the raw download from Canva: every media file,
+font and `design.json` (the full Canva document, including hidden draft pages).
